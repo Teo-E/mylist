@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Products List</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        body {
+          margin: 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+        }
+      
+        footer {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: #f0f0f0;
+          height: 100px;
+        }
+      
+        button {
+          padding: 10px 20px;
+          font-size: 16px;
+          background-color: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+      </style>
+      
+</head>
+<body>
+    <div class="container-fluid mt-3">
+        <h2 class="text-center mb-3">Products List</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <!-- <form id="addUserForm" > -->
+                    <h4>Add Product</h4>
+                    <div class="form-group">
+                        <label for="product">Product Name:</label>
+                        <input type="text" class="form-control" id="product" placeholder="Enter nameProduct" name="product">
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" min="1" class="form-control" id="quantity" placeholder="Enter quantity" name="quantity">
+                    </div>
+                    <button id="add"  class="btn btn-primary" onclick="createProduct()">Add</button>
+                <!-- </form> -->
+                <br>
+                <div id="modifyProduct" hidden>
+                <!-- <form id="modifyProduct" hidden> -->
+                    <h4>Modify Product</h4>
+                    <div class="form-group">
+                        <label for="product">Product Name:</label>
+                        <input type="text" class="form-control" id="productMod" placeholder="Enter nameProduct" name="productMod">
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" min="1" class="form-control" id="quantityMod" placeholder="Enter quantity" name="quantityMod">
+                    </div>
+                    <button id="modbut"class="btn btn-primary">Modify</button>
+                <!-- </form> -->
+            </div>
+            </div>
+            <div class="col-md-8">
+                <h4>Products List</h4>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+               
+                    <tbody id="userTableBody">
+
+                    </tbody>
+             
+                </table>
+            </div>
+        </div>
+    </div>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <footer ><button id="logout" class="btn btn-dark" onclick="logout()"> Logout</button></footer>
+    <script>
+
+let tableBody = document.getElementById('userTableBody');
+        fetch('/products').then((data)=> {
+                return data.json()
+            }).then((dataa)=> {
+
+                    for (let i=0; i< dataa.length; i++)
+                    {
+                        let tr = document.createElement('tr');
+                        let td= document.createElement('td');
+
+                        tr.innerHTML= '<td>'+dataa[i].id+'</td><td>'+dataa[i].product+'</td><td>'+dataa[i].quantity+'</td><td><button id="delete" type="button" class="btn btn-danger" onclick="deleteProduct('+dataa[i].id+')" >Delete</button> <button id="mod" type="button" class="btn btn-primary" onclick="modifyProduct('+dataa[i].id+')" >Modify</button> </td>';
+                        tableBody.appendChild(tr);
+
+                    }
+                })
+
+
+
+        //LOGOUT
+        function logout(){
+            fetch('/logout', {
+                method: 'get'
+            }).then((data)=> {
+                location.href = "http://localhost:3000/";
+            })
+        }
+
+
+        //CREATE
+        function createProduct(){
+
+            const rbody = JSON.stringify(
+                {
+                    product: document.getElementById('product').value, 
+                    quantity:document.getElementById('quantity').value
+                })
+            fetch('/products', {
+                method: 'post',
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body:rbody
+            }).then((data)=> {
+               // location.reload();
+                    while(tableBody.firstChild)
+                    {
+                        tableBody.removeChild(tableBody.firstChild);
+                    }
+
+                    read();
+                    
+           document.getElementById('product').value="";
+           document.getElementById('quantity').value="";
+            
+            
+            })
+            
+            
+        }
+
+
+
+        //VISUALIZZAZIONE
+        function read(){
+        let tableBody = document.getElementById('userTableBody');
+        fetch('/products').then((data)=> {
+                return data.json()
+            }).then((dataa)=> {
+
+                    for (let i=0; i< dataa.length; i++)
+                    {
+                        let tr = document.createElement('tr');
+                        let td= document.createElement('td');
+
+                        tr.innerHTML= '<td>'+dataa[i].id+'</td><td>'+dataa[i].product+'</td><td>'+dataa[i].quantity+'</td><td><button id="delete" type="button" class="btn btn-danger" onclick="deleteProduct('+dataa[i].id+')" >Delete</button> <button id="mod" type="button" class="btn btn-primary" onclick="modifyProduct('+dataa[i].id+')" >Modify</button> </td>';
+                        tableBody.appendChild(tr);
+
+                    }
+                })
+
+            }
+
+
+        //DELETE
+        function deleteProduct(id) {
+            fetch(`/products/`+id, {
+                method: 'delete'
+             })
+           .then((data)=> {
+             let trDelete = document.getElementById(id);
+              tableBody.removeChild(trDelete);
+            })
+
+            location.reload();
+        }
+
+
+
+
+
+      //MODIFICA
+        function modifyProduct(id){
+
+               fetch(`/products/`+id, {
+                    method: 'get'
+                })
+                .then((data)=> {
+                    return data.json()
+            }).then((dataa)=>{
+                
+                let form= document.getElementById('modifyProduct');
+                form.hidden= false;
+                let buttonMod= document.getElementById('modbut');
+
+                for(let i=0; i< dataa.length; i++)
+                {
+                  let inputproductName= document.getElementById('productMod');
+                  let inputquantity= document.getElementById('quantityMod');
+                    inputproductName.value= dataa[i].product;
+                    inputquantity.value= dataa[i].quantity;
+
+                }
+
+                
+                buttonMod.addEventListener('click',function(){
+                    const rbody = JSON.stringify(
+                    {
+                        productMod: document.getElementById('productMod').value, 
+                        quantityMod:document.getElementById('quantityMod').value
+                    })
+                    fetch(`/products/`+id, {
+                        method: 'put',
+                        headers: {
+                            "Content-type": "application/json"
+                        },
+                        body:rbody
+                    }).then((modd)=>{
+                        
+                        while(tableBody.firstChild)
+                    {
+                        tableBody.removeChild(tableBody.firstChild);
+                    }
+
+                    read();
+
+                    form.hidden=true;
+                    
+                });
+
+                
+                })
+
+
+
+            });
+
+           
+
+    }
+
+
+
+
+
+
+    </script>
+</body>
+</html>
