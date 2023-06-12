@@ -33,8 +33,9 @@ app.use(cookieParser());
 
 // API per la lettura di tutti gli prodotto
 app.get('/products', (req, res) => {
-    let sql = 'SELECT * FROM products';
-    let query = db.query(sql, (err, results) => {
+    let sql = 'SELECT * FROM products WHERE idUser = ?';
+    let valueID = [req.cookies.idUser];
+    let query = db.query(sql,valueID,(err, results) => {
         if (err) throw err;
         res.send(results);
     });
@@ -52,8 +53,8 @@ app.get('/products/:id', (req, res) => {
 
 // API per la creazione di un prodotto
 app.post('/products', (req, res) => {
-    let sql = 'INSERT INTO products (product,quantity,idUser) values (?,?,1)';
-    let values = [req.body.product, req.body.quantity];
+    let sql = 'INSERT INTO products (product,quantity,idUser) values (?,?,?)';
+    let values = [req.body.product, req.body.quantity, req.cookies.idUser];
     let query = db.query(sql, values, (err) => {
         if (err) throw err;
          res.redirect('/home');
@@ -107,6 +108,24 @@ app.get('/logout', (req,res)=>{
 });
 
 
+//API per la registrazione
+app.post('/register', (req,res)=>{
+    let values= [req.body.nameUser, req.body.passwordUser];
+    let passHash = crypto.createHash('sha256').update(values[1]).digest('hex');
+    let valuesHash = [values[0], passHash];
+    let sql = `INSERT INTO users (nameUser, passwordUser) VALUES (?,?)`;
+    let query = db.query(sql, valuesHash, (err) => {
+        if (err) throw err;
+        res.redirect('/');
+    });
+
+});
+
+
+
+
+
+
 //routes
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname ,'/login.html'));
@@ -118,6 +137,10 @@ app.get('/home',(req,res)=>{
     }else{
         res.redirect('/');
     }
+});
+
+app.get('/register',(req,res)=>{   
+    res.sendFile(path.join(__dirname ,'/register.html'));
 });
 
 // Avvio del server 
