@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Page</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #08375e;
+    }
+    
+    .login-form {
+      margin-top: 5rem;
+      background-color: #22201f;
+      color: white;
+      font-family:Georgia, 'Times New Roman', Times, serif;
+      font-size: 16px;
+      padding: 2rem;
+      border-radius: 0.5rem;
+    }
+    
+    .login-form h3 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .form-control {
+      border-radius: 1rem;
+    }
+    
+    .btn-custom {
+      background-color:  #0069d9;
+      border-color:  #0062cc;
+      border-radius: 1rem;
+      padding: 0.75rem 2rem;
+      color: white;
+      font-size: 16px;
+    }
+    
+    .btn-custom:hover {
+      background-color: #08fd00;
+      border-color: #06d46d;
+    }
+
+    div.container {
+      margin-top: 9rem;
+    }
+    h3{
+        font-size: 40px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-4">
+        <div class="card login-form">
+          <div class="card-body">
+            <h3>MyList</h3>
+            <form id="registerForm" method="post" action="/register">
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="Enter username" name="nameUser">
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Enter password" name="passwordUser">
+              </div>
+              <div class="form-group">
+                <label for="password">Confirm Password</label>
+                <input type="password" class="form-control" id="passwordConfermed" placeholder="Enter password">
+              </div>
+              <button id="reg" type="submit" class="btn btn-block btn-custom">Register</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.getElementById("reg").onclick = function () {
+        var password = document.getElementById("password").value;
+        var passwordConfermed = document.getElementById("passwordConfermed").value;
+        if(password != passwordConfermed){
+            alert("Password not match");
+            return false;
+        }
+    };
+</script>
+
+</body>
+</html>
